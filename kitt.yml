@@ -1,0 +1,35 @@
+# Required minimal config
+owner:
+  group: buynow # change to your own group 
+notify:
+  slack:
+    channelName: buynow # change to your own slack channel 
+profiles:
+  - springboot-web
+
+deploy:
+  namespace: buynow
+  releaseType:
+   deployTimeout: 1500
+  helm:
+    values:
+      livenessProbe:
+        wait: 120
+      min:
+        cpu: 100m
+        memory: 256Mi
+      max:
+        cpu: 100m
+        memory: 1024Mi
+      networking:
+        httpsEnabled: false
+        httpEnabled: true 
+  stages:
+    - name: dev
+      helm:
+        values:
+          env:
+            JAVA_OPTS: "-Dspring.profiles.active=dev"
+      refs: [master,branch]
+      target:
+        - cluster_id: [scus-dev-a2]
